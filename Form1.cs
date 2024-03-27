@@ -19,7 +19,7 @@ namespace vychmat1_1
 
     public partial class Form1 : Form
     {
-        public float epsilon = 0.001f;
+        public float epsilon = 0.01f;
         public List<(float Left, float Right)> intervals;
         public List<float> res;
         public enum FType { FIRST = 0, SECOND };
@@ -142,8 +142,6 @@ namespace vychmat1_1
             int Count = 0;
             int allC = 0;
 
-
-
             for (int i = 0; i < intervals.Count; i++)
             {
                 a = intervals[i].Left;
@@ -155,15 +153,24 @@ namespace vychmat1_1
                 x0 = 0;
 
                 Count = 0;
-
-                while (Math.Abs(x0 - x) > epsilon)
-                {
-                    Count++;
-                    allC++;
-                    x0 = x;
-                    x += lambda * (Func(x));
-                    promZnach.Items.Add(x);
-                }
+                if(Math.Max(DFunc(a), DFunc(b)) < 1 / 2)
+                    while (Math.Abs(x0 - x) > epsilon)
+                    {
+                        Count++;
+                        allC++;
+                        x0 = x;
+                        x += lambda * (Func(x));
+                        promZnach.Items.Add(x);
+                    }
+                else if(Math.Max(DFunc(a), DFunc(b)) > 1 / 2)
+                    while (Math.Abs(x0 - x) > ((Math.Max(DFunc(a), DFunc(b) - 1) / Math.Max(DFunc(a), DFunc(b)) * epsilon)))
+                    {
+                        Count++;
+                        allC++;
+                        x0 = x;
+                        x += lambda * (Func(x));
+                        promZnach.Items.Add(x);
+                    }
 
                 res.Add(x);
                 rootCount.Text = res.Count.ToString();
@@ -190,7 +197,7 @@ namespace vychmat1_1
             {
                 a = intervals[i].Left;
                 b = intervals[i].Right;
-                x0 = (-Func(a)) * (b - a) / (Func(b) - Func(a)) + a;
+                x0 = (-Func(a)) * (b - a) / (Func(b) - Func(a)) + a;      
                 if (Math.Sign(DDFunc(a)) == Math.Sign(Func(a))) xmark = a;
                 else xmark = b;
                 xi = (-Func(xmark)) * (x0 - xmark) / (Func(x0) - Func(xmark)) + xmark;
